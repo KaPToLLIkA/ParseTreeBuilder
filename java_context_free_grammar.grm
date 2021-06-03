@@ -1,0 +1,17 @@
+lang -> java end_def
+
+literal -> "(^\s*[+-]?\d+\.?\d*)|(^\s*\"[^\"]*\")|(^\s*\'[^\']*\')" end_def
+
+identifier -> "^\s*[_a-zA-Z][_\-A-Za-z0-9]*" end_def
+
+field_of_view -> "default" | "public" | "protected" | "private" | "" end_def
+
+type_modifiers -> "const" | "" end_def
+
+static_modifier -> "static" | "" end_def
+
+types -> "byte" | "short" | "int" | "long" | "float" | "double" | "char" | "boolean" end_def
+
+class_definition -> field_of_view "class" identifier { class_body } ; end_def
+
+class_body -> {  }
