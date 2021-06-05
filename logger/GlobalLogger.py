@@ -9,11 +9,14 @@ class EventType(enum.Enum):
 
 
 class GlobalLogger:
+    enabled = True
+
     @staticmethod
     def log(event_type: EventType, msg: str):
-        result_msg = '{0:10}:{1:15} {2}\n'.format(event_type, time.ctime(time.time()), msg)
+        if GlobalLogger.enabled:
+            result_msg = '{0:10}:{1:15} {2}\n'.format(event_type, time.ctime(time.time()), msg)
 
-        print(result_msg)
+            print(result_msg)
 
     @staticmethod
     def log_warning(msg):
