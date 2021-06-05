@@ -10,3 +10,7 @@ class Grammar:
 
     def get_rules(self):
         return self._rules
+
+    def __str__(self):
+        # TODO: implement "to string" method
+        pass
