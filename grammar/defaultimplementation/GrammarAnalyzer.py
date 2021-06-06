@@ -12,24 +12,28 @@ class GrammarAnalyzer(IGrammarAnalyzer):
 
     @staticmethod
     def _parse_rule(raw_rule):
-        head, raw_bodies = list(map(lambda i: str(i).strip(), (str(raw_rule).split('->'))))
+        try:
+            head, raw_bodies = list(map(lambda i: str(i).strip(), (str(raw_rule).split('->'))))
 
-        bodies = list(map(lambda i: str(i).strip(), (str(raw_bodies).split('|'))))
+            bodies = list(map(lambda i: str(i).strip(), (str(raw_bodies).split('|'))))
 
-        rule = Rule(head)
+            rule = Rule(head)
 
-        for raw_body in bodies:
-            new_body = RuleBody()
-            body_items = list(map(lambda i: str(i).strip(), (str(raw_body).split(' '))))
+            for raw_body in bodies:
+                new_body = RuleBody()
+                body_items = list(map(lambda i: str(i).strip(), (str(raw_body).split(' '))))
 
-            for raw_body_item in body_items:
-                if raw_body_item.__contains__('\"'):
-                    new_body.add_element(RuleBodyElement(raw_body_item, RuleBodyElementType.VALUE))
-                else:
-                    new_body.add_element(RuleBodyElement(raw_body_item, RuleBodyElementType.NEXT_RULE))
+                for raw_body_item in body_items:
+                    if raw_body_item.__contains__('\"'):
+                        new_body.add_element(RuleBodyElement(raw_body_item, RuleBodyElementType.VALUE))
+                    else:
+                        new_body.add_element(RuleBodyElement(raw_body_item, RuleBodyElementType.NEXT_RULE))
 
-            rule.add_body(new_body)
+                rule.add_body(new_body)
 
+        except Exception as e:
+            GlobalLogger.log_error(f'Rule: "{raw_rule}" Error: "{e}"')
+            rule = Rule('parsing_failed_no_use_it')
         return rule
 
     def analyze(self, raw_grammar):
