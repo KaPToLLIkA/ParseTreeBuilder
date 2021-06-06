@@ -18,8 +18,8 @@ class Main {
     int a = 3;
 
     {
-        int a = 13;
-        int b = 14;
+        int acxz = 13;
+        int bdsa__das = 14;
         int a[];
         int b[] = new int [5] { a, 3, a, 10 };
 
