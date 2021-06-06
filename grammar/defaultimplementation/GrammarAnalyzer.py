@@ -15,7 +15,7 @@ class GrammarAnalyzer(IGrammarAnalyzer):
         try:
             head, raw_bodies = list(map(lambda i: str(i).strip(), (str(raw_rule).split('->'))))
 
-            bodies = list(map(lambda i: str(i).strip(), (str(raw_bodies).split('|'))))
+            bodies = list(map(lambda i: str(i).strip(), (str(raw_bodies).split(' |'))))
 
             rule = Rule(head)
 
@@ -24,8 +24,10 @@ class GrammarAnalyzer(IGrammarAnalyzer):
                 body_items = list(map(lambda i: str(i).strip(), (str(raw_body).split(' '))))
 
                 for raw_body_item in body_items:
-                    if raw_body_item.__contains__('\"'):
-                        new_body.add_element(RuleBodyElement(raw_body_item, RuleBodyElementType.VALUE))
+                    if raw_body_item.startswith('\"') and raw_body_item.endswith('\"'):
+                        new_body.add_element(RuleBodyElement(raw_body_item[1:-1], RuleBodyElementType.VALUE))
+                    elif raw_body_item.startswith('\"') or raw_body_item.endswith('\"'):
+                        raise Exception('There are no closing or opening quotation marks')
                     else:
                         new_body.add_element(RuleBodyElement(raw_body_item, RuleBodyElementType.NEXT_RULE))
 

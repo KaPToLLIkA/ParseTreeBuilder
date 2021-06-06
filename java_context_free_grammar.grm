@@ -22,7 +22,13 @@
 # || source_files_extensions    || defines extensions for   ||
 # ||                            || files with source code   ||
 # ============================================================
+# || main					    || entry analyze point		||
+# ||                            ||            				||
+# ============================================================
 #
+
+main -> class_definition
+end_def
 
 lang -> "java"
 end_def
@@ -30,12 +36,15 @@ end_def
 source_files_extensions -> ".java"
 end_def
 
-literal -> "(^\s*[+-]?\d+\.?\d*)"
-    | "(^\s*\"[^\"]*\")"
-    | "(^\s*\'[^\']*\')"
+literal -> "([+-]?\d+\.?\d*)"
+    | "(\"[^\"]*\")"
+    | "(\'[^\']*\')"
 end_def
 
-identifier -> "^\s*[_a-zA-Z][_\-A-Za-z0-9]*"
+identifier -> "[_a-zA-Z][_\-A-Za-z0-9]*"
+end_def
+
+class_name -> "[_a-zA-Z][_\-A-Za-z0-9]*"
 end_def
 
 field_of_view -> "default"
@@ -45,7 +54,7 @@ field_of_view -> "default"
     | ""
 end_def
 
-type_modifiers -> "const" | ""
+type_modifiers -> "final" | ""
 end_def
 
 static_modifier -> "static" | ""
@@ -61,8 +70,154 @@ types -> "byte"
     | "boolean"
 end_def
 
-class_definition -> field_of_view "class" identifier "{" class_body "}" ";"
+class_definition -> field_of_view "class" class_name "{" class_body "}" ";"
 end_def
 
-class_body -> "body"
+class_body -> definitions
 end_def
+
+definitions -> definition definitions | ""
+end_def
+
+definition -> class_definition | field_def | method_def
+end_def
+
+field_def ->
+    field_of_view static_modifier type_modifiers types identifier ";" |
+    field_of_view static_modifier type_modifiers types identifier "=" value_def ";" |
+	field_of_view static_modifier type_modifiers types "[]" identifier ";" |
+	field_of_view static_modifier type_modifiers types "[]" identifier "=" array_value_def ";" |
+	field_of_view static_modifier type_modifiers class_name identifier ";" |
+    field_of_view static_modifier type_modifiers class_name identifier "=" value_def ";" |
+	field_of_view static_modifier type_modifiers class_name "[]" identifier ";" |
+	field_of_view static_modifier type_modifiers class_name "[]" identifier "=" array_value_def ";"
+end_def
+
+array_value_def -> 
+	"new" types "[" literal "]" ";" | 
+	"new" types "[" literal "]" "{" args_in "}" ";" |
+	"new" class_name "[" literal "]" ";" | 
+	"new" class_name "[" literal "]" "{" args_in "}" ";"
+end_def
+
+method_def -> 
+	field_of_view static_modifier type_modifiers types identifier "(" args_def ")" "{" instructions_set "}" |
+	field_of_view static_modifier type_modifiers class_name identifier "(" args_def ")" "{" instructions_set "}"
+end_def
+
+instructions_set -> instructions
+end_def
+
+value_def -> 
+	literal | 
+	"new" class_name "(" args_in ")"
+end_def
+
+args_in -> arg_in "," args_in | arg_in | ""
+end_def
+
+arg_in -> literal | identifier
+end_def
+
+args_def -> arg_def "," args_def | arg_def | ""
+end_def
+
+arg_def -> 
+	type_modifiers types identifier |
+	type_modifiers class_name identifier |
+	type_modifiers class_name "[]" identifier |
+	type_modifiers types "[]" identifier
+end_def
+
+instructions -> instruction instructions | ""
+end_def
+
+instruction -> expression ";" | control_structures ";" | "{" instructions "}"
+end_def
+
+expression -> 
+	identifier "=" r_value |
+	identifier "+=" r_value |
+	identifier "-=" r_value |
+	identifier "/=" r_value |
+	identifier "%=" r_value |
+	identifier "+=" r_value
+end_def
+
+r_value -> logical_expr | math_expr | literal
+end_def
+
+math_expr -> 
+	math_expr "+" math_term |
+	math_expr "-" math_term |
+	math_term
+end_def
+
+math_term ->
+	math_term "*" math_factor |
+	math_term "/" math_factor |
+	math_term "%" math_factor |
+	math_factor
+end_def
+
+math_factor -> 
+	literal |
+	identifier |
+	"(" math_expr ")"
+end_def
+
+logical_expr ->
+	logical_expr "||" logical_1 |
+	logical_1
+end_def
+
+logical_1 ->
+	logical_1 "&&" logical_2 |
+	logical_2
+end_def
+
+logical_2 ->
+	logical_2 "==" logical_3 |
+	logical_2 "!=" logical_3 |
+	logical_3
+end_def
+
+logical_3 ->
+	logical_3 ">" logical_4 |
+	logical_3 "<" logical_4 |
+	logical_3 "<=" logical_4 |
+	logical_3 ">=" logical_4 |
+	logical_4
+end_def
+
+logical_4 ->
+	identifier |
+	literal |
+	"(" logical_expr ")" 
+end_def
+
+optional_expr -> expression | ""
+end_def
+
+optional_logical_expr -> logical_expr | ""
+end_def
+
+control_structures ->
+	"if" "(" logical_expr ")" "{" instructions "}" else_section |
+	"do" "{" instructions "}" "while" "(" logical_expr ")" |
+	"while" "(" logical_expr ")" "{" instructions "}" |
+	"for" "(" optional_expr ";" optional_logical_expr ";" optional_expr ")" "{" instructions "}"
+end_def
+
+else_section ->
+	"else" "{" instructions "}" |
+	"else" "if" "(" logical_expr ")" "{" instructions "}" else_section |
+	""
+end_def
+
+
+
+
+
+
+
