@@ -12,3 +12,6 @@ class TreeNode:
 
     def get_child_s(self):
         return self._child_s
+
+    def get_last_child(self):
+        return self._child_s[-1]
