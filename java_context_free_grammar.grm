@@ -25,12 +25,18 @@
 # || main					    || entry analyze point		||
 # ||                            ||            				||
 # ============================================================
+# || brackets_pairs				|| pairs of brackets		||
+# ||                            ||            				||
+# ============================================================
 #
 
-main -> class_definition
+main -> class_definitions
 end_def
 
 lang -> "java"
+end_def
+
+brackets_pairs -> "(" ")" | "{" "}"
 end_def
 
 source_files_extensions -> ".java"
@@ -70,6 +76,9 @@ types -> "byte"
     | "boolean"
 end_def
 
+class_definitions -> class_definition class_definitions | ""
+end_def
+
 class_definition -> field_of_view "class" class_name "{" class_body "}" ";"
 end_def
 
@@ -85,24 +94,24 @@ end_def
 field_def ->
     field_of_view static_modifier type_modifiers types identifier ";" |
     field_of_view static_modifier type_modifiers types identifier "=" value_def ";" |
-	field_of_view static_modifier type_modifiers types "[]" identifier ";" |
-	field_of_view static_modifier type_modifiers types "[]" identifier "=" array_value_def ";" |
+	field_of_view static_modifier type_modifiers types "\[\]" identifier ";" |
+	field_of_view static_modifier type_modifiers types "\[\]" identifier "=" array_value_def ";" |
 	field_of_view static_modifier type_modifiers class_name identifier ";" |
     field_of_view static_modifier type_modifiers class_name identifier "=" value_def ";" |
-	field_of_view static_modifier type_modifiers class_name "[]" identifier ";" |
-	field_of_view static_modifier type_modifiers class_name "[]" identifier "=" array_value_def ";"
+	field_of_view static_modifier type_modifiers class_name "\[\]" identifier ";" |
+	field_of_view static_modifier type_modifiers class_name "\[\]" identifier "=" array_value_def ";"
 end_def
 
 array_value_def -> 
-	"new" types "[" literal "]" ";" | 
-	"new" types "[" literal "]" "{" args_in "}" ";" |
-	"new" class_name "[" literal "]" ";" | 
-	"new" class_name "[" literal "]" "{" args_in "}" ";"
+	"new" types "\[" literal "\]" ";" | 
+	"new" types "\[" literal "\]" "{" args_in "}" ";" |
+	"new" class_name "\[" literal "\]" ";" | 
+	"new" class_name "\[" literal "\]" "{" args_in "}" ";"
 end_def
 
 method_def -> 
-	field_of_view static_modifier type_modifiers types identifier "(" args_def ")" "{" instructions_set "}" |
-	field_of_view static_modifier type_modifiers class_name identifier "(" args_def ")" "{" instructions_set "}"
+	field_of_view static_modifier type_modifiers types identifier "\(" args_def "\)" "{" instructions_set "}" |
+	field_of_view static_modifier type_modifiers class_name identifier "\(" args_def "\)" "{" instructions_set "}"
 end_def
 
 instructions_set -> instructions
@@ -110,7 +119,7 @@ end_def
 
 value_def -> 
 	literal | 
-	"new" class_name "(" args_in ")"
+	"new" class_name "\(" args_in "\)"
 end_def
 
 args_in -> arg_in "," args_in | arg_in | ""
@@ -125,8 +134,8 @@ end_def
 arg_def -> 
 	type_modifiers types identifier |
 	type_modifiers class_name identifier |
-	type_modifiers class_name "[]" identifier |
-	type_modifiers types "[]" identifier
+	type_modifiers class_name "\[\]" identifier |
+	type_modifiers types "\[\]" identifier
 end_def
 
 instructions -> instruction instructions | ""
@@ -137,24 +146,24 @@ end_def
 
 expression -> 
 	identifier "=" r_value |
-	identifier "+=" r_value |
-	identifier "-=" r_value |
+	identifier "\+=" r_value |
+	identifier "\-=" r_value |
 	identifier "/=" r_value |
 	identifier "%=" r_value |
-	identifier "+=" r_value
+	identifier "\*=" r_value
 end_def
 
 r_value -> logical_expr | math_expr | literal
 end_def
 
 math_expr -> 
-	math_expr "+" math_term |
-	math_expr "-" math_term |
+	math_expr "\+" math_term |
+	math_expr "\-" math_term |
 	math_term
 end_def
 
 math_term ->
-	math_term "*" math_factor |
+	math_term "\*" math_factor |
 	math_term "/" math_factor |
 	math_term "%" math_factor |
 	math_factor
@@ -163,7 +172,7 @@ end_def
 math_factor -> 
 	literal |
 	identifier |
-	"(" math_expr ")"
+	"\(" math_expr "\)"
 end_def
 
 logical_expr ->
@@ -193,7 +202,7 @@ end_def
 logical_4 ->
 	identifier |
 	literal |
-	"(" logical_expr ")" 
+	"\(" logical_expr "\)" 
 end_def
 
 optional_expr -> expression | ""
@@ -203,15 +212,15 @@ optional_logical_expr -> logical_expr | ""
 end_def
 
 control_structures ->
-	"if" "(" logical_expr ")" "{" instructions "}" else_section |
+	"if" "\(" logical_expr "\)" "{" instructions "}" else_section |
 	"do" "{" instructions "}" "while" "(" logical_expr ")" |
-	"while" "(" logical_expr ")" "{" instructions "}" |
-	"for" "(" optional_expr ";" optional_logical_expr ";" optional_expr ")" "{" instructions "}"
+	"while" "\(" logical_expr "\)" "{" instructions "}" |
+	"for" "\(" optional_expr ";" optional_logical_expr ";" optional_expr "\)" "{" instructions "}"
 end_def
 
 else_section ->
 	"else" "{" instructions "}" |
-	"else" "if" "(" logical_expr ")" "{" instructions "}" else_section |
+	"else" "if" "\(" logical_expr "\)" "{" instructions "}" else_section |
 	""
 end_def
 
