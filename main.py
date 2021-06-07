@@ -1,3 +1,4 @@
+from analyzer.defaultimplementation.CLikeTokenizer import CLikeTokenizer
 from analyzer.defaultimplementation.CodeLoader import CodeLoader
 from grammar.defaultimplementation.GrammarAnalyzer import GrammarAnalyzer
 from grammar.defaultimplementation.GrammarLoader import GrammarLoader
@@ -23,4 +24,12 @@ if __name__ == '__main__':
     GlobalLogger.log_info(f'Code from "{file_with_code}":')
     GlobalLogger.log_info(code_loader.code)
     GlobalLogger.log_info('End of code.')
+
+    code_tokenizer = CLikeTokenizer(grammar_analyzer.grammar, code_loader.code)
+    code_tokenizer.tokenize()
+
+    GlobalLogger.log_info(f'Tokens from code:')
+    GlobalLogger.log_info(code_tokenizer)
+    GlobalLogger.log_info('End of tokens.')
+
 
