@@ -43,34 +43,7 @@ class CLikeTokenizer(ITokenizer):
             for i in range(0, len(body_items)):
                 if RuleBodyElementType.NEXT_RULE == body_items[i].element_type:
                     if i == 0 and body_items[i].string == next_rule_id:
-                        last_term = CLikeTokenizer._get_last_term(body_items)
-
-                        if last_term is None:
-                            success = False
-                            break
-
-                        if sub_code.__contains__(last_term.string):
-                            sub_codes = sub_code.split(last_term.string)
-                            for sub_c_i in range(0, len(sub_codes)):
-                                if sub_codes[sub_c_i]:
-                                    _success, _tokens, _new_str = self._rec_tokenize(body_items[i].string, sub_codes[sub_c_i])
-                                    if _success:
-                                        tokens += _tokens
-                                        tmp = []
-                                        if sub_c_i != len(sub_codes) - 1:
-                                            tmp = sub_codes[:sub_c_i] + [_new_str] + sub_codes[sub_c_i + 1:]
-                                        else:
-                                            tmp = sub_codes[:sub_c_i] + [_new_str]
-                                        new_str = ''.join(tmp)
-                                        success = True
-                                        break
-                                    else:
-                                        success = False
-                        else:
-                            success = False
-                            break
-                        if not success:
-                            break
+                        pass
                     else:
                         _success, _tokens, _new_str = self._rec_tokenize(body_items[i].string, new_str)
 
