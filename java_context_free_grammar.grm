@@ -28,6 +28,9 @@
 # || brackets_pairs				|| pairs of brackets		||
 # ||                            ||            				||
 # ============================================================
+# || instructions_seps			|| instruction's separators	||
+# ||                            ||            				||
+# ============================================================
 #
 
 main -> class_definitions
@@ -37,6 +40,9 @@ lang -> "java"
 end_def
 
 brackets_pairs -> "(" ")" | "{" "}"
+end_def
+
+instructions_seps -> ";"
 end_def
 
 source_files_extensions -> ".java"
