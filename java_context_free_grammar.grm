@@ -39,7 +39,7 @@ end_def
 lang -> "java"
 end_def
 
-brackets_pairs -> "(" ")" | "{" "}"
+brackets_pairs -> "\(" "\)" | "{" "}"
 end_def
 
 instructions_seps -> ";"
