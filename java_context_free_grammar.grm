@@ -182,7 +182,7 @@ math_factor ->
 end_def
 
 logical_expr ->
-	logical_expr "||" logical_1 |
+	logical_expr "\|\|" logical_1 |
 	logical_1
 end_def
 
