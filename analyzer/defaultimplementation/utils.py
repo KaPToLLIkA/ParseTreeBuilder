@@ -22,7 +22,7 @@ def get_suffix(code: str, target: str):
         return code
 
 
-def _get_first_term(body_items: list):
+def get_first_term(body_items: list):
     for item in body_items:
         if RuleBodyElementType.VALUE == item.element_type:
             return item
