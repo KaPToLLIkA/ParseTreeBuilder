@@ -1,5 +1,6 @@
 import re
 
+from analyzer.defaultimplementation.utils import get_balanced_sub_sequence, get_first_term
 from analyzer.interfaces.ITokenizer import ITokenizer
 from analyzer.model.Token import Token
 from grammar.model.Grammar import Grammar
@@ -16,14 +17,6 @@ class CLikeTokenizer(ITokenizer):
         self.grammar = grammar
         self.tokens = []
         self.code = code
-
-    @staticmethod
-    def _get_last_term(body_items: list):
-        for item in body_items:
-            if RuleBodyElementType.VALUE == item.element_type:
-                return item
-
-        return None
 
     def _rec_tokenize(self, next_rule_id, sub_code: str):
         ''':return [success, tokens, new_str]'''
@@ -42,8 +35,27 @@ class CLikeTokenizer(ITokenizer):
             body_items = body.get_elements()
             for i in range(0, len(body_items)):
                 if RuleBodyElementType.NEXT_RULE == body_items[i].element_type:
+
                     if i == 0 and body_items[i].string == next_rule_id:
-                        pass
+                        term = get_first_term(body_items)
+                        if term is None:
+                            success = False
+                            break
+
+                        target, suffix = get_balanced_sub_sequence(self.grammar, new_str, term.string)
+
+                        if target:
+                            _success, _tokens, _new_str = self._rec_tokenize(body_items[i].string, target)
+
+                            if _success:
+                                tokens += _tokens
+                                new_str = _new_str + suffix
+                            else:
+                                success = False
+                                break
+                        else:
+                            success = False
+                            break
                     else:
                         _success, _tokens, _new_str = self._rec_tokenize(body_items[i].string, new_str)
 
