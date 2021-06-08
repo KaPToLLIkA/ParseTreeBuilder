@@ -15,3 +15,6 @@ class TreeNode:
 
     def get_last_child(self):
         return self._child_s[-1]
+
+    def remove_last(self):
+        self._child_s.pop()

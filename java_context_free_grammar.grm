@@ -39,7 +39,7 @@ end_def
 lang -> "java"
 end_def
 
-brackets_pairs -> "\(" "\)" | "{" "}"
+brackets_pairs -> "\(" "\)" | "{" "}" | "\[" "\]"
 end_def
 
 instructions_seps -> ";"
@@ -102,10 +102,6 @@ field_def ->
     field_of_view static_modifier type_modifiers types identifier "=" value_def ";" |
 	field_of_view static_modifier type_modifiers types "\[\]" identifier ";" |
 	field_of_view static_modifier type_modifiers types "\[\]" identifier "=" array_value_def ";" |
-	field_of_view static_modifier type_modifiers class_name identifier ";" |
-    field_of_view static_modifier type_modifiers class_name identifier "=" value_def ";" |
-	field_of_view static_modifier type_modifiers class_name "\[\]" identifier ";" |
-	field_of_view static_modifier type_modifiers class_name "\[\]" identifier "=" array_value_def ";"
 end_def
 
 array_value_def -> 
@@ -159,7 +155,7 @@ expression ->
 	identifier "\*=" r_value
 end_def
 
-r_value -> logical_expr | math_expr | literal
+r_value -> math_expr | literal
 end_def
 
 math_expr -> 

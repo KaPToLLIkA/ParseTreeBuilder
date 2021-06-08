@@ -1,4 +1,5 @@
 from analyzer.defaultimplementation.CodeLoader import CodeLoader
+from analyzer.java.ParseTreeBuilder import ParseTreeBuilder
 from analyzer.java.Tokenizer import Tokenizer
 from grammar.defaultimplementation.GrammarAnalyzer import GrammarAnalyzer
 from grammar.defaultimplementation.GrammarLoader import GrammarLoader
@@ -35,3 +36,7 @@ if __name__ == '__main__':
     GlobalLogger.log_info(f'Code from tokens:')
     GlobalLogger.log_info(code_tokenizer.tokens_to_code())
     GlobalLogger.log_info('End of code.')
+
+    tree_builder = ParseTreeBuilder(code_tokenizer.tokes)
+    tree_builder.build_tree()
+    GlobalLogger.log_info(tree_builder.__str__())
