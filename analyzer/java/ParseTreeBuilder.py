@@ -347,6 +347,34 @@ class ParseTreeBuilder(IParseTreeBuilder):
         return RetVal(True, start)
 
     def _args_def(self, start: int, end: int, current_node: TreeNode):
+        if start >= end:
+            return RetVal(False)
+
+        current_node.add_child(TreeNode('type_modifier'))
+        rv = self._type_modifiers(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+            start -= 1
+
+        start += 1
+        current_node.add_child(TreeNode('types'))
+        rv = self._types(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+            return RetVal(False)
+
+        start += 1
+        current_node.add_child(TreeNode('identifier'))
+        rv = self._identifier(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+            return RetVal(False)
+
+        start += 1
+        if str_cmp(',', self.tokens[start]):
+            current_node.add_child(TreeNode(self.tokens[start].value))
+            self._args_def(start + 1, end, current_node.get_last_child())
+
         return RetVal(True)
 
     def _instructions(self, start: int, end: int, current_node: TreeNode):
