@@ -24,6 +24,8 @@ class R:
 
     types = r'(byte)|(short)|(int)|(long)|(float)|(double)|(char)|(boolean)|(void)'
 
+    ops1 = r'(=)|(\+=)|(\-=)|(/=)|(%=)|(\*=)'
+
     instructions_sep = r';'
 
 
@@ -378,16 +380,88 @@ class ParseTreeBuilder(IParseTreeBuilder):
         return RetVal(True)
 
     def _instructions(self, start: int, end: int, current_node: TreeNode):
-        return RetVal(True)
+        if start >= end:
+            return RetVal(False)
 
-    # def _field_def(self, start: int, end: int, current_node: TreeNode):
-    #     return RetVal(True)
-    #
-    # def _field_def(self, start: int, end: int, current_node: TreeNode):
-    #     return RetVal(True)
-    #
-    # def _field_def(self, start: int, end: int, current_node: TreeNode):
-    #     return RetVal(True)
+        current_node.add_child(TreeNode('expression'))
+        rv = self._expression(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+        else:
+            start = rv.last_used_pos + 1
+
+        current_node.add_child(TreeNode('control'))
+        rv = self._control(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+        else:
+            start = rv.last_used_pos + 1
+
+        if str_cmp(R.curly_o_br, self.tokens[start]):
+            new_end = self.get_close_bracket(R.curly_o_br, start, end)
+            current_node.add_child(TreeNode('{'))
+            current_node.add_child(TreeNode('instructions'))
+            rv = self._instructions(start + 1, new_end, current_node.get_last_child())
+            if not rv.flag:
+                current_node.remove_last()
+                current_node.remove_last()
+            else:
+                start = new_end + 1
+                current_node.add_child(TreeNode('}'))
+
+        current_node.add_child(TreeNode('instructions'))
+        rv = self._instructions(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+        else:
+            start = rv.last_used_pos
+
+        return RetVal(True, start)
+
+    def _expression(self, start: int, end: int, current_node: TreeNode):
+        if start >= end:
+            return RetVal(False)
+
+        current_node.add_child(TreeNode('types'))
+        rv = self._types(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+        else:
+            start += 1
+
+        current_node.add_child(TreeNode('identifier'))
+        rv = self._identifier(start, end, current_node.get_last_child())
+        if not rv.flag:
+            current_node.remove_last()
+            return RetVal(False)
+
+        start += 1
+        if str_cmp(R.ops1, self.tokens[start]):
+            current_node.add_child(TreeNode(self.tokens[start]))
+            start += 1
+            if str_cmp(R.literal, self.tokens[start]):
+                current_node.add_child(TreeNode(self.tokens[start]))
+            else:
+                current_node.add_child(TreeNode('identifier'))
+                rv = self._identifier(start, end, current_node.get_last_child())
+                if not rv.flag:
+                    current_node.remove_last()
+                    return RetVal(False)
+            start += 1
+            if str_cmp(R.instructions_sep, self.tokens[start]):
+                current_node.add_child(TreeNode(self.tokens[start]))
+            else:
+                return RetVal(False)
+        else:
+            return RetVal(False)
+
+        return RetVal(True, start)
+
+    def _control(self, start: int, end: int, current_node: TreeNode):
+        return RetVal(False)
+
+    def _math_expr(self, start: int, end: int, current_node: TreeNode):
+        return RetVal(False)
 
     def build_tree(self):
         self.root = TreeNode('main')

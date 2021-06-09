@@ -6,7 +6,11 @@ class Main {
   protected static final char c = '1';
 
   public static int t(int a, int b, int c) {
-    v = a + b - c;
+    v = 3;
+  }
+
+  public static int t(int a, int b, int c, int c, int c, int c, int c, int c, int c, int c) {
+
   }
 
   public class Name {
@@ -14,33 +18,26 @@ class Main {
 
   };
 
+
+  public class Name2 {
+    public static final char nan = "Nas";
+
+  };
+
   public static void main() {
-    int a = 3;
+    a = 3;
 
     {
-        int acxz = 13;
-        int bdsa__das = 14;
-        int a;
-        int b = 3;
-
-        for (; a < 14;) {
-            if (b == 13) {
-                do { a = 0; } while (a > 3);
-            }
-            else if (b == 10) {}
-            else {
-                if (b == 1)
-                    b = 2;
-            }
-        }
+        acxz = 13;
+        bdsa__das = 14;
+        b = 3;
     }
 
     {
         char t = 'e';
         {
             char a = 'a';
-            int v;
-            v = a + (b - a) / 1 - ((a - 3) * 3) - 4;
+            v = a;
             {
                 {
                     {
